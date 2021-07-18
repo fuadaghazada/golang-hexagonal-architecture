@@ -30,5 +30,5 @@ func Debug(message string, fields ...zap.Field) {
 }
 
 func Error(message string, fields ...zap.Field) {
-	log.Debug(message, fields...)
+	log.Error(message, fields...)
 }

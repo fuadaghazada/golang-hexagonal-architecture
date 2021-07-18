@@ -6,12 +6,12 @@ import (
 )
 
 type Account struct {
-	AccountId   string
-	CustomerId  string
-	OpeningDate string
-	AccountType string
-	Amount      float64
-	Status      string
+	AccountId   string	`db:"account_id"`
+	CustomerId  string	`db:"customer_id"`
+	OpeningDate string	`db:"opening_date"`
+	AccountType string	`db:"account_type"`
+	Amount      float64	`db:"amount"`
+	Status      string	`db:"status"`
 }
 
 func (a Account) ToResponseDto() dto.NewAccountResponseDto {
@@ -20,6 +20,11 @@ func (a Account) ToResponseDto() dto.NewAccountResponseDto {
 	}
 }
 
+func (a Account) CanWithdraw(amount float64) bool {
+	return amount <= a.Amount
+}
+
 type AccountRepository interface {
 	Save(Account) (*Account, *errs.AppError)
+	FindById(string) (*Account, *errs.AppError)
 }

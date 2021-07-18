@@ -30,3 +30,23 @@ func (ah AccountHandler) NewAccount(writer http.ResponseWriter, request *http.Re
 		}
 	}
 }
+
+func (ah AccountHandler) NewTransaction(writer http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+
+	accountId := vars["accountId"]
+
+	var newTransactionDto dto.NewTransactionDto
+	if err := json.NewDecoder(request.Body).Decode(&newTransactionDto); err != nil {
+		writeResponse(writer, http.StatusBadRequest, err.Error())
+	} else {
+		newTransactionDto.AccountId = accountId
+
+		account, err := ah.service.NewTransaction(newTransactionDto)
+		if err != nil {
+			writeResponse(writer, err.Code, err.AsMessage())
+		} else {
+			writeResponse(writer, http.StatusCreated, account)
+		}
+	}
+}
