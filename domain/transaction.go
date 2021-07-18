@@ -17,6 +17,7 @@ type Transaction struct {
 func (t Transaction) ToResponseDto(balance float64) dto.NewTransactionResponseDto {
 	return dto.NewTransactionResponseDto{
 		TransactionId: t.TransactionId,
+		AccountId: t.AccountId,
 		Balance: balance,
 	}
 }
