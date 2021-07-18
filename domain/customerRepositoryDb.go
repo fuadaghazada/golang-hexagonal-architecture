@@ -2,12 +2,10 @@ package domain
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/fuadaghazada/banking/errs"
 	"github.com/fuadaghazada/banking/logger"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"os"
 	"time"
 )
 
@@ -52,22 +50,10 @@ func (d CustomerRepositoryDb) FindById(id string) (*Customer, *errs.AppError) {
 	return &c, nil
 }
 
-func NewCustomerRepositoryDb() CustomerRepositoryDb {
-	dbUser := os.Getenv("DB_USER")
-	dbPwd := os.Getenv("DB_PWD")
-	dbName := os.Getenv("DB_NAME")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
+func NewCustomerRepositoryDb(dbClient *sqlx.DB) CustomerRepositoryDb {
+	dbClient.SetConnMaxLifetime(time.Minute * 3)
+	dbClient.SetMaxOpenConns(10)
+	dbClient.SetMaxIdleConns(10)
 
-	dataSource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPwd, dbHost, dbPort, dbName)
-	client, err := sqlx.Open("mysql", dataSource)
-	if err != nil {
-		panic(err)
-	}
-
-	client.SetConnMaxLifetime(time.Minute * 3)
-	client.SetMaxOpenConns(10)
-	client.SetMaxIdleConns(10)
-
-	return CustomerRepositoryDb{client}
+	return CustomerRepositoryDb{client: dbClient}
 }
